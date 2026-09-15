@@ -89,7 +89,7 @@ export default function PublicLandingPage() {
   const [inquirySuccess, setInquirySuccess] = useState(false);
   const [inquiryError, setInquiryError] = useState('');
 
-  // Fetch Public Data tanpa Butuh Composite Index Firestore
+  // Fetch Public Data
   useEffect(() => {
     const fetchLandingData = async () => {
       try {
@@ -101,7 +101,7 @@ export default function PublicLandingPage() {
           setSettings(settingsSnap.data() as CompanySettings);
         }
 
-        // 2. Fetch Services (Fetch orderBy lalu Filter Client-side)
+        // 2. Fetch Services
         const servicesQuery = query(collection(db, 'services'), orderBy('order', 'asc'));
         const servicesSnap = await getDocs(servicesQuery);
         const fetchedServices: ServiceItem[] = [];
@@ -113,7 +113,7 @@ export default function PublicLandingPage() {
         });
         setServices(fetchedServices);
 
-        // 3. Fetch Products (Fetch orderBy lalu Filter Client-side)
+        // 3. Fetch Products
         const productsQuery = query(collection(db, 'products'), orderBy('order', 'asc'));
         const productsSnap = await getDocs(productsQuery);
         const fetchedProducts: ProductItem[] = [];
@@ -125,7 +125,7 @@ export default function PublicLandingPage() {
         });
         setProducts(fetchedProducts);
 
-        // 4. Fetch Clients (Fetch orderBy lalu Filter Client-side)
+        // 4. Fetch Clients
         const clientsQuery = query(collection(db, 'clients'), orderBy('order', 'asc'));
         const clientsSnap = await getDocs(clientsQuery);
         const fetchedClients: ClientItem[] = [];
@@ -237,17 +237,14 @@ export default function PublicLandingPage() {
     <div className="min-h-screen bg-slate-950 text-white selection:bg-blue-600 selection:text-white font-sans antialiased overflow-x-hidden">
       <PublicNavbar lang={lang} onLanguageChange={handleLanguageChange} />
 
-      {/* Hero Section Modern dengan Ornamen Senosoft Dual-Tone (Biru & Merah) */}
-      <section className="relative pt-36 pb-24 md:pt-48 md:pb-36">
-        
-        {/* Futuristic Grid & Dual Glow Accent */}
+      {/* 1. HERO SECTION (Deep Space Dark & Dual Glow Accent) */}
+      <section className="relative pt-36 pb-24 md:pt-48 md:pb-36 bg-slate-950">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full bg-[radial-[#1e293b_1px,transparent_1px)] [background-size:32px_32px] opacity-30 pointer-events-none" />
-        <div className="absolute top-24 left-1/3 -translate-x-1/2 w-[500px] h-[350px] bg-blue-600/25 blur-[140px] rounded-full pointer-events-none" />
-        <div className="absolute top-36 right-1/3 translate-x-1/2 w-[450px] h-[320px] bg-red-600/20 blur-[150px] rounded-full pointer-events-none" />
+        <div className="absolute top-24 left-1/3 -translate-x-1/2 w-[500px] h-[350px] bg-blue-600/20 blur-[140px] rounded-full pointer-events-none" />
+        <div className="absolute top-36 right-1/3 translate-x-1/2 w-[450px] h-[320px] bg-red-600/15 blur-[150px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center space-y-8">
           
-          {/* Brand Badge Ornamen */}
           <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-900/90 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-widest shadow-xl shadow-blue-500/10 backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
@@ -290,7 +287,6 @@ export default function PublicLandingPage() {
             </a>
           </div>
 
-          {/* Quick Metrics Banner */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12 max-w-4xl mx-auto border-t border-slate-900">
             <div className="p-4 rounded-2xl bg-slate-900/40 border border-blue-500/20 hover:border-blue-500/40 transition-colors">
               <div className="text-2xl font-black text-blue-400 font-mono">100%</div>
@@ -321,9 +317,9 @@ export default function PublicLandingPage() {
         </div>
       </section>
 
-      {/* Services Showcase Section */}
-      <section id="services" className="py-24 border-t border-slate-900/80 bg-slate-950/60 relative">
-        <div className="max-w-7xl mx-auto px-6 space-y-16">
+      {/* 2. SERVICES SECTION (Elevated Slate Dark Layer - Slate 900/70) */}
+      <section id="services" className="py-24 bg-slate-900/70 border-y border-slate-800/80 relative">
+        <div className="max-w-7xl mx-auto px-6 space-y-16 relative z-10">
           <div className="text-center space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-widest text-blue-400 flex items-center justify-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-red-500" /> 
@@ -343,10 +339,10 @@ export default function PublicLandingPage() {
             {services.map((service) => (
               <div
                 key={service.id}
-                className="group relative bg-slate-900/50 border border-slate-800/90 hover:border-blue-500/50 rounded-3xl p-8 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between"
+                className="group relative bg-slate-950/70 border border-slate-800/90 hover:border-blue-500/50 rounded-3xl p-8 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-xl"
               >
                 <div className="space-y-4">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center group-hover:border-red-500/40 group-hover:scale-105 transition-all shadow-lg">
+                  <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-red-500/40 group-hover:scale-105 transition-all shadow-lg">
                     {renderIcon(service.iconName)}
                   </div>
 
@@ -375,11 +371,13 @@ export default function PublicLandingPage() {
         </div>
       </section>
 
-      {/* Featured Products Showcase */}
-      <section id="portfolio" className="py-24 border-t border-slate-900">
-        <div className="max-w-7xl mx-auto px-6 space-y-12">
+      {/* 3. PORTFOLIO SECTION (Pure Black Contrast Slate-950 + Ambient Blue Tint) */}
+      <section id="portfolio" className="py-24 bg-slate-950 relative">
+        <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-blue-600/10 blur-[140px] rounded-full pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-6 space-y-12 relative z-10">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-900 pb-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-800/80 pb-8">
             <div>
               <h2 className="text-xs font-bold uppercase tracking-widest text-blue-400 flex items-center gap-2">
                 <LayoutGrid className="w-4 h-4 text-red-500" /> 
@@ -414,10 +412,9 @@ export default function PublicLandingPage() {
                   <div
                     key={product.id}
                     onClick={() => openProductModal(product)}
-                    className="group cursor-pointer bg-slate-900/60 border border-slate-800/90 hover:border-red-500/50 rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between"
+                    className="group cursor-pointer bg-slate-900/60 border border-slate-800/90 hover:border-red-500/50 rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-xl"
                   >
                     <div>
-                      {/* Product Thumbnail Container */}
                       <div className="relative aspect-video bg-slate-950 overflow-hidden">
                         <img
                           src={product.imageUrl || '/placeholder.png'}
@@ -426,12 +423,10 @@ export default function PublicLandingPage() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
                         
-                        {/* Category Badge */}
                         <span className="absolute top-4 left-4 bg-blue-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-md shadow-lg border border-blue-400/30">
                           {product.category}
                         </span>
 
-                        {/* Interactive Expand Overlay Icon */}
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950/40 backdrop-blur-[2px]">
                           <span className="px-4 py-2 bg-gradient-to-r from-blue-600 to-red-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xl">
                             <Maximize2 className="w-3.5 h-3.5" /> 
@@ -440,7 +435,6 @@ export default function PublicLandingPage() {
                         </div>
                       </div>
 
-                      {/* Card Content */}
                       <div className="p-6 space-y-3">
                         <h4 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
                           {product.title}
@@ -451,7 +445,6 @@ export default function PublicLandingPage() {
                       </div>
                     </div>
 
-                    {/* Card Footer Tech Stack */}
                     <div className="px-6 pb-6 pt-2 border-t border-slate-800/60 flex items-center justify-between">
                       <div className="flex flex-wrap gap-1.5">
                         {product.techStack?.slice(0, 3).map((tech, idx) => (
@@ -474,10 +467,10 @@ export default function PublicLandingPage() {
         </div>
       </section>
 
-      {/* Our Clients Section */}
+      {/* 4. CLIENTS SECTION (Warm Slate-900/50 Sub-layer) */}
       {clients.length > 0 && (
-        <section id="clients" className="py-20 border-t border-slate-900 bg-slate-950/40 relative">
-          <div className="max-w-7xl mx-auto px-6 space-y-12">
+        <section id="clients" className="py-20 bg-slate-900/50 border-y border-slate-800/80 relative">
+          <div className="max-w-7xl mx-auto px-6 space-y-12 relative z-10">
             
             <div className="text-center space-y-3">
               <h2 className="text-xs font-bold uppercase tracking-widest text-emerald-400 flex items-center justify-center gap-1.5">
@@ -494,7 +487,6 @@ export default function PublicLandingPage() {
               </p>
             </div>
 
-            {/* Clients Cards Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
               {clients.map((client) => {
                 const CardWrapper = client.websiteUrl ? 'a' : 'div';
@@ -506,10 +498,9 @@ export default function PublicLandingPage() {
                   <CardWrapper
                     key={client.id}
                     {...wrapperProps}
-                    className="group bg-slate-900/60 border border-slate-800/80 hover:border-blue-500/40 rounded-2xl p-4 flex flex-col items-center justify-between text-center transition-all duration-300 hover:-translate-y-1 shadow-lg"
+                    className="group bg-slate-950/80 border border-slate-800/80 hover:border-blue-500/40 rounded-2xl p-4 flex flex-col items-center justify-between text-center transition-all duration-300 hover:-translate-y-1 shadow-lg"
                   >
-                    {/* Logo Display Box */}
-                    <div className="w-full aspect-video rounded-xl bg-slate-950/80 border border-slate-900 p-3 flex items-center justify-center overflow-hidden mb-3 group-hover:border-slate-800 transition-colors">
+                    <div className="w-full aspect-video rounded-xl bg-slate-900/90 border border-slate-800 p-3 flex items-center justify-center overflow-hidden mb-3 group-hover:border-slate-700 transition-colors">
                       <img
                         src={client.logoUrl}
                         alt={client.name}
@@ -537,9 +528,9 @@ export default function PublicLandingPage() {
         </section>
       )}
 
-      {/* Interactive Contact Form Section */}
-      <section id="contact" className="py-24 border-t border-slate-900 bg-slate-950/80">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      {/* 5. CONTACT INQUIRY SECTION (Gradient Slate 900 -> 950 Dark Conclusion) */}
+      <section id="contact" className="py-24 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 relative">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start relative z-10">
           
           <div className="space-y-6">
             <h2 className="text-xs font-bold uppercase tracking-widest text-blue-400">
@@ -557,7 +548,7 @@ export default function PublicLandingPage() {
             </p>
 
             <div className="space-y-4 pt-4">
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80">
                 <div className="p-3 rounded-xl bg-blue-600/10 text-blue-400">
                   <Mail className="w-5 h-5" />
                 </div>
@@ -567,7 +558,7 @@ export default function PublicLandingPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80">
                 <div className="p-3 rounded-xl bg-emerald-600/10 text-emerald-400">
                   <Phone className="w-5 h-5" />
                 </div>
@@ -580,7 +571,7 @@ export default function PublicLandingPage() {
           </div>
 
           {/* Form Card */}
-          <div className="bg-slate-900/80 border border-slate-800/90 rounded-3xl p-8 space-y-6 shadow-2xl backdrop-blur-md">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 space-y-6 shadow-2xl backdrop-blur-md">
             <h4 className="text-xl font-bold text-white">
               {lang === 'id' ? 'Kirim Pesan Inquiry' : 'Send Inquiry Message'}
             </h4>
@@ -614,7 +605,7 @@ export default function PublicLandingPage() {
                     value={inquiryName}
                     onChange={(e) => setInquiryName(e.target.value)}
                     placeholder={lang === 'id' ? 'Contoh: Gilang Ramadhan' : 'e.g., John Doe'}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
 
@@ -628,7 +619,7 @@ export default function PublicLandingPage() {
                     value={inquiryEmail}
                     onChange={(e) => setInquiryEmail(e.target.value)}
                     placeholder="nama@perusahaan.com"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-sm focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -643,7 +634,7 @@ export default function PublicLandingPage() {
                     value={inquiryPhone}
                     onChange={(e) => setInquiryPhone(e.target.value)}
                     placeholder="6281234567890"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-sm focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
 
@@ -656,7 +647,7 @@ export default function PublicLandingPage() {
                     value={inquiryCompany}
                     onChange={(e) => setInquiryCompany(e.target.value)}
                     placeholder={lang === 'id' ? 'PT Senopati Teknologi Solusi' : 'Acme Tech Corp'}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -675,7 +666,7 @@ export default function PublicLandingPage() {
                       ? 'Ceritakan rencana proyek software, instalasi CCTV, atau swap jaringan...' 
                       : 'Describe your software project, CCTV setup, or network swap plan...'
                   }
-                  className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm resize-none focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm resize-none focus:outline-none focus:border-blue-500 transition-colors"
                 />
               </div>
 
@@ -706,7 +697,6 @@ export default function PublicLandingPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
           <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             
-            {/* Modal Header */}
             <div className="p-6 border-b border-slate-800 flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">
@@ -722,7 +712,6 @@ export default function PublicLandingPage() {
               </button>
             </div>
 
-            {/* Modal Body: Interactive Gallery Slider */}
             <div className="overflow-y-auto p-6 space-y-6">
               {(() => {
                 const gallery = activeModalProduct.galleryUrls?.length 
@@ -737,7 +726,6 @@ export default function PublicLandingPage() {
                       className="w-full h-full object-contain"
                     />
 
-                    {/* Left & Right Slider Buttons */}
                     {gallery.length > 1 && (
                       <>
                         <button
@@ -753,7 +741,6 @@ export default function PublicLandingPage() {
                           <ChevronRight className="w-5 h-5" />
                         </button>
                         
-                        {/* Slide Indicator Counter */}
                         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-slate-950/80 px-3 py-1 rounded-full text-xs font-mono text-slate-300 border border-slate-800">
                           {currentSlideIndex + 1} / {gallery.length}
                         </div>
@@ -763,7 +750,6 @@ export default function PublicLandingPage() {
                 );
               })()}
 
-              {/* Product Details & Specs */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2 space-y-4">
                   <h4 className="text-sm font-bold uppercase tracking-wider text-blue-400">
@@ -773,7 +759,6 @@ export default function PublicLandingPage() {
                     {activeModalProduct.description}
                   </p>
 
-                  {/* Features List */}
                   {activeModalProduct.features && activeModalProduct.features.length > 0 && (
                     <div className="space-y-2 pt-2">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -791,7 +776,6 @@ export default function PublicLandingPage() {
                   )}
                 </div>
 
-                {/* Tech Stack Side Card */}
                 <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4">
                   <div>
                     <span className="text-[10px] text-slate-500 uppercase font-bold">

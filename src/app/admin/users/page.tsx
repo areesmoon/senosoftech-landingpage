@@ -139,7 +139,7 @@ export default function AdminUsersPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* HEADER PAGE */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
         <div>
@@ -180,131 +180,247 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      {/* TABLE USERS LIST */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center p-12 text-slate-400 gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-            <span className="text-xs font-mono">Memuat Data Pengguna...</span>
-          </div>
-        ) : filteredUsers.length === 0 ? (
-          <div className="p-12 text-center text-slate-500 text-xs font-medium">
-            Tidak ada pengguna terdaftar yang ditemukan.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-950/60 border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 font-mono">
-                <tr>
-                  <th className="px-6 py-4">User Info</th>
-                  <th className="px-6 py-4">Role Hak Akses</th>
-                  <th className="px-6 py-4">Nomor WhatsApp</th>
-                  <th className="px-6 py-4 text-center">Inquiry Contact</th>
-                  <th className="px-6 py-4 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 font-medium">
-                {filteredUsers.map((user) => {
-                  const isSaving = updatingId === user.id;
+      {/* CONTENT AREA */}
+      {loading ? (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center p-12 text-slate-400 gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+          <span className="text-xs font-mono">Memuat Data Pengguna...</span>
+        </div>
+      ) : filteredUsers.length === 0 ? (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center text-slate-500 text-xs font-medium">
+          Tidak ada pengguna terdaftar yang ditemukan.
+        </div>
+      ) : (
+        <>
+          {/* 1. LAYOUT CARD UNTUK LAYAR KECIL (MOBILE / HP) */}
+          <div className="grid grid-cols-1 gap-4 md:hidden">
+            {filteredUsers.map((user) => {
+              const isSaving = updatingId === user.id;
 
-                  return (
-                    <tr key={user.id} className="hover:bg-slate-800/40 transition-colors">
-                      {/* Name & Email */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs shrink-0">
-                            {user.name.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="overflow-hidden">
-                            <div className="text-xs font-bold text-white truncate">{user.name}</div>
-                            <div className="text-[11px] text-slate-400 font-mono truncate">{user.email}</div>
-                          </div>
-                        </div>
-                      </td>
+              return (
+                <div
+                  key={user.id}
+                  className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-md"
+                >
+                  {/* User Profile Info */}
+                  <div className="flex items-center gap-3 border-b border-slate-800/80 pb-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-sm shrink-0">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="overflow-hidden">
+                      <div className="text-sm font-bold text-white truncate">{user.name}</div>
+                      <div className="text-xs text-slate-400 font-mono truncate">{user.email}</div>
+                    </div>
+                  </div>
 
-                      {/* Role Selector */}
-                      <td className="px-6 py-4">
-                        <div className="relative w-36">
-                          <select
-                            value={user.role}
-                            onChange={(e) => handleInputChange(user.id, 'role', e.target.value)}
-                            className="w-full py-1.5 pl-8 pr-3 bg-slate-950 border border-slate-700 rounded-lg text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500"
-                          >
-                            <option value="admin">Admin</option>
-                            <option value="superadmin">Superadmin</option>
-                          </select>
-                          <div className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                            {user.role === 'superadmin' ? (
-                              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                            ) : (
-                              <Shield className="w-3.5 h-3.5 text-blue-400" />
-                            )}
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* WhatsApp Input */}
-                      <td className="px-6 py-4">
-                        <div className="relative w-44">
-                          <Phone className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                          <input
-                            type="text"
-                            placeholder="628xxxxxxxxxx"
-                            value={user.whatsapp}
-                            onChange={(e) => handleInputChange(user.id, 'whatsapp', e.target.value)}
-                            className="w-full pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500"
-                          />
-                        </div>
-                      </td>
-
-                      {/* Contact Flag Toggle */}
-                      <td className="px-6 py-4 text-center">
-                        <label className="inline-flex items-center cursor-pointer gap-2">
-                          <input
-                            type="checkbox"
-                            checked={user.isContact}
-                            onChange={(e) => handleInputChange(user.id, 'isContact', e.target.checked)}
-                            className="sr-only peer"
-                          />
-                          <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600 relative"></div>
-                          <span className="text-[11px] font-mono text-slate-400">
-                            {user.isContact ? (
-                              <span className="text-emerald-400 font-semibold">Aktif</span>
-                            ) : (
-                              <span className="text-slate-500">Nonaktif</span>
-                            )}
-                          </span>
-                        </label>
-                      </td>
-
-                      {/* Action Button */}
-                      <td className="px-6 py-4 text-right">
-                        <button
-                          onClick={() => handleSaveUser(user)}
-                          disabled={isSaving}
-                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white font-semibold rounded-lg text-xs transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                  {/* Form Controls Mobile */}
+                  <div className="space-y-3 text-xs">
+                    {/* Role Selector */}
+                    <div>
+                      <label className="block text-slate-400 font-semibold mb-1">
+                        Role Hak Akses
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleInputChange(user.id, 'role', e.target.value)}
+                          className="w-full py-2 pl-9 pr-3 bg-slate-950 border border-slate-700 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500"
                         >
-                          {isSaving ? (
-                            <>
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              <span>Proses...</span>
-                            </>
+                          <option value="admin">Admin</option>
+                          <option value="superadmin">Superadmin</option>
+                        </select>
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                          {user.role === 'superadmin' ? (
+                            <ShieldCheck className="w-4 h-4 text-emerald-400" />
                           ) : (
-                            <>
-                              <Save className="w-3.5 h-3.5" />
-                              <span>Simpan</span>
-                            </>
+                            <Shield className="w-4 h-4 text-blue-400" />
                           )}
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* WhatsApp Input */}
+                    <div>
+                      <label className="block text-slate-400 font-semibold mb-1">
+                        Nomor WhatsApp
+                      </label>
+                      <div className="relative">
+                        <Phone className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                        <input
+                          type="text"
+                          placeholder="628xxxxxxxxxx"
+                          value={user.whatsapp}
+                          onChange={(e) => handleInputChange(user.id, 'whatsapp', e.target.value)}
+                          className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Inquiry Contact Toggle */}
+                    <div className="pt-1 flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800">
+                      <span className="text-xs font-semibold text-slate-300">
+                        Penerima WA Inquiry
+                      </span>
+                      <label className="inline-flex items-center cursor-pointer gap-2">
+                        <input
+                          type="checkbox"
+                          checked={user.isContact}
+                          onChange={(e) => handleInputChange(user.id, 'isContact', e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600 relative"></div>
+                        <span className="text-[11px] font-mono">
+                          {user.isContact ? (
+                            <span className="text-emerald-400 font-semibold">Aktif</span>
+                          ) : (
+                            <span className="text-slate-500">Off</span>
+                          )}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="pt-2">
+                    <button
+                      onClick={() => handleSaveUser(user)}
+                      disabled={isSaving}
+                      className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white font-semibold rounded-xl text-xs transition-colors flex items-center justify-center gap-2 shadow-md shadow-blue-600/20"
+                    >
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Menyimpan Perubahan...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" />
+                          <span>Simpan Perubahan User</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
-      </div>
+
+          {/* 2. LAYOUT TABLE UNTUK LAYAR LEBAR (DESKTOP) */}
+          <div className="hidden md:block bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm text-slate-300">
+                <thead className="bg-slate-950/60 border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 font-mono">
+                  <tr>
+                    <th className="px-6 py-4">User Info</th>
+                    <th className="px-6 py-4">Role Hak Akses</th>
+                    <th className="px-6 py-4">Nomor WhatsApp</th>
+                    <th className="px-6 py-4 text-center">Inquiry Contact</th>
+                    <th className="px-6 py-4 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-medium">
+                  {filteredUsers.map((user) => {
+                    const isSaving = updatingId === user.id;
+
+                    return (
+                      <tr key={user.id} className="hover:bg-slate-800/40 transition-colors">
+                        {/* Name & Email */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs shrink-0">
+                              {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="overflow-hidden">
+                              <div className="text-xs font-bold text-white truncate">{user.name}</div>
+                              <div className="text-[11px] text-slate-400 font-mono truncate">{user.email}</div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Role Selector */}
+                        <td className="px-6 py-4">
+                          <div className="relative w-36">
+                            <select
+                              value={user.role}
+                              onChange={(e) => handleInputChange(user.id, 'role', e.target.value)}
+                              className="w-full py-1.5 pl-8 pr-3 bg-slate-950 border border-slate-700 rounded-lg text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500"
+                            >
+                              <option value="admin">Admin</option>
+                              <option value="superadmin">Superadmin</option>
+                            </select>
+                            <div className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                              {user.role === 'superadmin' ? (
+                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                              ) : (
+                                <Shield className="w-3.5 h-3.5 text-blue-400" />
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* WhatsApp Input */}
+                        <td className="px-6 py-4">
+                          <div className="relative w-44">
+                            <Phone className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                            <input
+                              type="text"
+                              placeholder="628xxxxxxxxxx"
+                              value={user.whatsapp}
+                              onChange={(e) => handleInputChange(user.id, 'whatsapp', e.target.value)}
+                              className="w-full pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500"
+                            />
+                          </div>
+                        </td>
+
+                        {/* Contact Flag Toggle */}
+                        <td className="px-6 py-4 text-center">
+                          <label className="inline-flex items-center cursor-pointer gap-2">
+                            <input
+                              type="checkbox"
+                              checked={user.isContact}
+                              onChange={(e) => handleInputChange(user.id, 'isContact', e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600 relative"></div>
+                            <span className="text-[11px] font-mono text-slate-400">
+                              {user.isContact ? (
+                                <span className="text-emerald-400 font-semibold">Aktif</span>
+                              ) : (
+                                <span className="text-slate-500">Nonaktif</span>
+                              )}
+                            </span>
+                          </label>
+                        </td>
+
+                        {/* Action Button */}
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={() => handleSaveUser(user)}
+                            disabled={isSaving}
+                            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white font-semibold rounded-lg text-xs transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                          >
+                            {isSaving ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span>Proses...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Save className="w-3.5 h-3.5" />
+                                <span>Simpan</span>
+                              </>
+                            )}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

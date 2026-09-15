@@ -11,7 +11,8 @@ import {
   Eye, 
   EyeOff, 
   Loader2, 
-  ExternalLink 
+  ExternalLink,
+  Layers
 } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { 
@@ -101,7 +102,7 @@ export default function ProductsPage() {
         </Link>
       </div>
 
-      {/* Content Table / List */}
+      {/* Content Area */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 text-slate-500">
           <Loader2 className="w-8 h-8 animate-spin text-blue-500 mb-2" />
@@ -125,109 +126,206 @@ export default function ProductsPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 font-semibold uppercase text-[11px] tracking-wider">
-                <tr>
-                  <th className="py-3.5 px-4">Urutan</th>
-                  <th className="py-3.5 px-4">Produk</th>
-                  <th className="py-3.5 px-4">Kategori</th>
-                  <th className="py-3.5 px-4">Tech Stack</th>
-                  <th className="py-3.5 px-4 text-center">Tampil di Home</th>
-                  <th className="py-3.5 px-4 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {products.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="py-4 px-4 font-mono text-slate-500 text-xs">
-                      #{item.order ?? 0}
-                    </td>
-                    <td className="py-4 px-4">
-                      <div>
-                        <div className="font-bold text-white text-base flex items-center gap-2">
-                          <span>{item.title}</span>
-                          <span className="text-xs text-slate-500 font-mono font-normal">({item.slug})</span>
+        <>
+          {/* 1. LAYOUT CARD UNTUK LAYAR KECIL (MOBILE / HP) */}
+          <div className="grid grid-cols-1 gap-4 md:hidden">
+            {products.map((item) => (
+              <div
+                key={item.id}
+                className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-md"
+              >
+                {/* Header Card: Category & Order */}
+                <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                  <span className="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold">
+                    {item.category}
+                  </span>
+                  <span className="text-xs font-mono text-slate-500">
+                    Urutan #{item.order ?? 0}
+                  </span>
+                </div>
+
+                {/* Body Card: Title & Tagline */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="font-bold text-white text-base">{item.title}</h3>
+                    <span className="text-xs text-slate-500 font-mono">({item.slug})</span>
+                  </div>
+                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                    {item.tagline}
+                  </p>
+                </div>
+
+                {/* Tech Stack Badges */}
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {item.techStack?.slice(0, 4).map((tech, idx) => (
+                    <span
+                      key={idx}
+                      className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                  {item.techStack?.length > 4 && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
+                      +{item.techStack.length - 4}
+                    </span>
+                  )}
+                </div>
+
+                {/* Card Footer: Status & Actions */}
+                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                  <button
+                    onClick={() => toggleVisibility(item.id!, item.isFeatured)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                      item.isFeatured
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        : 'bg-slate-800 text-slate-500 border border-slate-700'
+                    }`}
+                  >
+                    {item.isFeatured ? (
+                      <>
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Aktif</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-3.5 h-3.5" />
+                        <span>Draft</span>
+                      </>
+                    )}
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/admin/products/edit/${item.id}`}
+                      className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition-colors"
+                      title="Edit Produk"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(item.id!, item.title)}
+                      disabled={deletingId === item.id}
+                      className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-colors disabled:opacity-50"
+                      title="Hapus Produk"
+                    >
+                      {deletingId === item.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* 2. LAYOUT TABLE UNTUK LAYAR LEBAR (DESKTOP) */}
+          <div className="hidden md:block bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm text-slate-300">
+                <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 font-semibold uppercase text-[11px] tracking-wider">
+                  <tr>
+                    <th className="py-3.5 px-4">Urutan</th>
+                    <th className="py-3.5 px-4">Produk</th>
+                    <th className="py-3.5 px-4">Kategori</th>
+                    <th className="py-3.5 px-4">Tech Stack</th>
+                    <th className="py-3.5 px-4 text-center">Tampil di Home</th>
+                    <th className="py-3.5 px-4 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {products.map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-800/30 transition-colors">
+                      <td className="py-4 px-4 font-mono text-slate-500 text-xs">
+                        #{item.order ?? 0}
+                      </td>
+                      <td className="py-4 px-4">
+                        <div>
+                          <div className="font-bold text-white text-base flex items-center gap-2">
+                            <span>{item.title}</span>
+                            <span className="text-xs text-slate-500 font-mono font-normal">({item.slug})</span>
+                          </div>
+                          <p className="text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-md">
+                            {item.tagline}
+                          </p>
                         </div>
-                        <p className="text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-md">
-                          {item.tagline}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <span className="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium">
-                        {item.category}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex flex-wrap gap-1 max-w-xs">
-                        {item.techStack?.slice(0, 3).map((tech, idx) => (
-                          <span
-                            key={idx}
-                            className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                        {item.techStack?.length > 3 && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
-                            +{item.techStack.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-center whitespace-nowrap">
-                      <button
-                        onClick={() => toggleVisibility(item.id!, item.isFeatured)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-                          item.isFeatured
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                            : 'bg-slate-800 text-slate-500 border border-slate-700'
-                        }`}
-                      >
-                        {item.isFeatured ? (
-                          <>
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>Aktif</span>
-                          </>
-                        ) : (
-                          <>
-                            <EyeOff className="w-3.5 h-3.5" />
-                            <span>Draft</span>
-                          </>
-                        )}
-                      </button>
-                    </td>
-                    <td className="py-4 px-4 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/admin/products/edit/${item.id}`}
-                          className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors"
-                          title="Edit Produk"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Link>
+                      </td>
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <span className="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium">
+                          {item.category}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex flex-wrap gap-1 max-w-xs">
+                          {item.techStack?.slice(0, 3).map((tech, idx) => (
+                            <span
+                              key={idx}
+                              className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                          {item.techStack?.length > 3 && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
+                              +{item.techStack.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-center whitespace-nowrap">
                         <button
-                          onClick={() => handleDelete(item.id!, item.title)}
-                          disabled={deletingId === item.id}
-                          className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors disabled:opacity-50"
-                          title="Hapus Produk"
+                          onClick={() => toggleVisibility(item.id!, item.isFeatured)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                            item.isFeatured
+                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                              : 'bg-slate-800 text-slate-500 border border-slate-700'
+                          }`}
                         >
-                          {deletingId === item.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
+                          {item.isFeatured ? (
+                            <>
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Aktif</span>
+                            </>
                           ) : (
-                            <Trash2 className="w-4 h-4" />
+                            <>
+                              <EyeOff className="w-3.5 h-3.5" />
+                              <span>Draft</span>
+                            </>
                           )}
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </td>
+                      <td className="py-4 px-4 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            href={`/admin/products/edit/${item.id}`}
+                            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors"
+                            title="Edit Produk"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(item.id!, item.title)}
+                            disabled={deletingId === item.id}
+                            className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors disabled:opacity-50"
+                            title="Hapus Produk"
+                          >
+                            {deletingId === item.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

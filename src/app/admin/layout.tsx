@@ -40,6 +40,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
 
+  // Otomatis tutup sidebar di mobile (HP) saat berpindah rute/halaman
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, [pathname]);
+
   useEffect(() => {
     // Skip listener jika di halaman login
     if (pathname === '/admin/login') {
@@ -84,6 +91,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     return () => unsubscribe();
   }, [pathname, router]);
+
+  // Helper untuk menutup sidebar jika diakses dari layar kecil (HP)
+  const handleNavClick = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  };
 
   // Handle Logout
   const handleLogout = async () => {
@@ -166,6 +180,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={handleNavClick}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 ${
                     isActive
                       ? 'bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/20'
@@ -256,7 +271,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         {/* Dynamic Page Content */}
-        <div className="max-w-7xl mx-auto p-8">
+        <div className="max-w-7xl mx-auto p-4 sm:p-8">
           {children}
         </div>
       </main>

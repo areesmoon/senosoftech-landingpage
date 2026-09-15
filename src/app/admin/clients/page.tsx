@@ -240,7 +240,7 @@ export default function AdminClientsPage() {
 
         <button
           onClick={openNewModal}
-          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2"
+          className="w-full sm:w-auto px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Klien Baru</span>
@@ -256,7 +256,7 @@ export default function AdminClientsPage() {
             placeholder="Cari nama klien atau bidang industri..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500"
+            className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500 transition-colors"
           />
         </div>
       </div>
@@ -294,7 +294,7 @@ export default function AdminClientsPage() {
                 <img
                   src={client.logoUrl}
                   alt={client.name}
-                  className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                  className="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
                 />
               </div>
 
@@ -313,7 +313,7 @@ export default function AdminClientsPage() {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleToggleActive(client)}
-                    className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+                    className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
                     title={client.isActive ? 'Nonaktifkan' : 'Aktifkan'}
                   >
                     {client.isActive ? <Eye className="w-3.5 h-3.5 text-emerald-400" /> : <EyeOff className="w-3.5 h-3.5 text-slate-500" />}
@@ -321,7 +321,7 @@ export default function AdminClientsPage() {
 
                   <button
                     onClick={() => openEditModal(client)}
-                    className="p-1.5 text-slate-400 hover:text-blue-400 rounded-lg hover:bg-slate-800"
+                    className="p-1.5 text-slate-400 hover:text-blue-400 rounded-lg hover:bg-slate-800 transition-colors"
                     title="Edit Data"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
@@ -329,7 +329,7 @@ export default function AdminClientsPage() {
 
                   <button
                     onClick={() => client.id && handleDelete(client.id)}
-                    className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
+                    className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors"
                     title="Hapus"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -342,173 +342,178 @@ export default function AdminClientsPage() {
         </div>
       )}
 
-      {/* MODAL FORM ADD / EDIT CLIENT */}
+      {/* MODAL FORM ADD / EDIT CLIENT (RESPONSIVE SAFE & SCROLLABLE) */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-2xl">
+          <div className="relative w-full max-w-lg max-h-[90vh] flex flex-col bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div className="p-5 border-b border-slate-800 flex items-center justify-between shrink-0">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-blue-500" />
                 {editingId ? 'Edit Data Klien' : 'Tambah Logo Klien Baru'}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-xl bg-slate-950 border border-slate-800"
+                className="p-1.5 text-slate-400 hover:text-white rounded-xl bg-slate-950 border border-slate-800 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {errorMsg && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold rounded-xl">
-                {errorMsg}
-              </div>
-            )}
+            {/* Modal Scrollable Body */}
+            <div className="overflow-y-auto p-6 space-y-4 flex-1">
+              {errorMsg && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold rounded-xl">
+                  {errorMsg}
+                </div>
+              )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">
-                  Nama Perusahaan Klien <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Contoh: PT Medika Nusantara"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+              <form id="client-form" onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-400 mb-1">
-                    Industri / Bidang Usaha
+                    Nama Perusahaan Klien <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
-                    value={industry}
-                    onChange={(e) => setIndustry(e.target.value)}
-                    placeholder="Contoh: Healthcare & Lab"
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Contoh: PT Medika Nusantara"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500 transition-colors"
                   />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1">
+                      Industri / Bidang Usaha
+                    </label>
+                    <input
+                      type="text"
+                      value={industry}
+                      onChange={(e) => setIndustry(e.target.value)}
+                      placeholder="Contoh: Healthcare & Lab"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500 transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1">
+                      Urutan Tampilan (Order)
+                    </label>
+                    <input
+                      type="number"
+                      value={order}
+                      onChange={(e) => setOrder(Number(e.target.value))}
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-blue-500 transition-colors"
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-400 mb-1">
-                    Urutan Tampilan (Order)
+                    Website URL Klien (Opsional)
                   </label>
                   <input
-                    type="number"
-                    value={order}
-                    onChange={(e) => setOrder(Number(e.target.value))}
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-blue-500"
+                    type="url"
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    placeholder="https://client-domain.com"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 font-mono text-xs focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">
-                  Website URL Klien (Opsional)
-                </label>
-                <input
-                  type="url"
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                  placeholder="https://client-domain.com"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 font-mono text-xs focus:outline-none focus:border-blue-500"
-                />
-              </div>
-
-              {/* Upload Logo Area */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">
-                  Logo Perusahaan <span className="text-red-400">*</span>
-                </label>
-
-                <div className="space-y-3">
-                  {logoUrl && !uploadFile && (
-                    <div className="relative w-32 h-16 rounded-xl bg-slate-950 border border-slate-800 p-2 flex items-center justify-center">
-                      <img src={logoUrl} alt="Logo Prev" className="max-h-full max-w-full object-contain" />
-                    </div>
-                  )}
-
-                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-800 hover:border-blue-500/50 bg-slate-950 cursor-pointer transition-colors">
-                    <Upload className="w-5 h-5 text-slate-400 mb-1" />
-                    <span className="text-xs font-semibold text-slate-300">
-                      {uploadFile ? uploadFile.name : 'Pilih File Logo (PNG / SVG Transparan)'}
-                    </span>
-                    <span className="text-[10px] text-slate-500 mt-0.5">Format disarankan PNG/SVG latar transparan</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          setUploadFile(e.target.files[0]);
-                        }
-                      }}
-                    />
+                {/* Upload Logo Area */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1">
+                    Logo Perusahaan <span className="text-red-400">*</span>
                   </label>
 
-                  {isUploading && (
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-[10px] text-slate-400">
-                        <span>Mengunggah logo...</span>
-                        <span>{uploadProgress}%</span>
+                  <div className="space-y-3">
+                    {logoUrl && !uploadFile && (
+                      <div className="relative w-32 h-16 rounded-xl bg-slate-950 border border-slate-800 p-2 flex items-center justify-center">
+                        <img src={logoUrl} alt="Logo Prev" className="max-h-full max-w-full object-contain" />
                       </div>
-                      <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-blue-500 h-full transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
+                    )}
+
+                    <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-800 hover:border-blue-500/50 bg-slate-950 cursor-pointer transition-colors">
+                      <Upload className="w-5 h-5 text-slate-400 mb-1" />
+                      <span className="text-xs font-semibold text-slate-300 text-center">
+                        {uploadFile ? uploadFile.name : 'Pilih File Logo (PNG / SVG Transparan)'}
+                      </span>
+                      <span className="text-[10px] text-slate-500 mt-0.5 text-center">Format disarankan PNG/SVG latar transparan</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setUploadFile(e.target.files[0]);
+                          }
+                        }}
+                      />
+                    </label>
+
+                    {isUploading && (
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[10px] text-slate-400">
+                          <span>Mengunggah logo...</span>
+                          <span>{uploadProgress}%</span>
+                        </div>
+                        <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                          <div className="bg-blue-500 h-full transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Status Toggle */}
-              <div className="pt-2 flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="isActiveClient"
-                  checked={isActive}
-                  onChange={(e) => setIsActive(e.target.checked)}
-                  className="w-4 h-4 rounded bg-slate-950 border-slate-800 text-blue-600 focus:ring-0"
-                />
-                <label htmlFor="isActiveClient" className="text-xs font-semibold text-slate-300 cursor-pointer">
-                  Tampilkan di Landing Page Utama
-                </label>
-              </div>
+                {/* Status Toggle */}
+                <div className="pt-2 flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="isActiveClient"
+                    checked={isActive}
+                    onChange={(e) => setIsActive(e.target.checked)}
+                    className="w-4 h-4 rounded bg-slate-950 border-slate-800 text-blue-600 focus:ring-0 cursor-pointer"
+                  />
+                  <label htmlFor="isActiveClient" className="text-xs font-semibold text-slate-300 cursor-pointer">
+                    Tampilkan di Landing Page Utama
+                  </label>
+                </div>
+              </form>
+            </div>
 
-              {/* Modal Footer */}
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-slate-950 hover:bg-slate-800 text-slate-400 font-semibold text-xs rounded-xl"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting || isUploading}
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white font-semibold text-xs rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Menyimpan...</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>{editingId ? 'Simpan Perubahan' : 'Tambah Klien'}</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
+            {/* Modal Footer */}
+            <div className="p-4 flex items-center justify-end gap-3 border-t border-slate-800 shrink-0 bg-slate-900">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-slate-950 hover:bg-slate-800 text-slate-400 font-semibold text-xs rounded-xl transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                form="client-form"
+                disabled={isSubmitting || isUploading}
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white font-semibold text-xs rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-all"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Menyimpan...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>{editingId ? 'Simpan Perubahan' : 'Tambah Klien'}</span>
+                  </>
+                )}
+              </button>
+            </div>
+
           </div>
         </div>
       )}

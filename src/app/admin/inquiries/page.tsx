@@ -15,7 +15,8 @@ import {
   Phone,
   User,
   X,
-  Send
+  Send,
+  MessageCircle
 } from 'lucide-react';
 
 import { db } from '@/lib/firebase';
@@ -111,25 +112,25 @@ export default function InquiriesAdminPage() {
     switch (status) {
       case 'unread':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 inline-flex items-center gap-1">
             <Clock className="w-3 h-3" /> Baru / Unread
           </span>
         );
       case 'read':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 inline-flex items-center gap-1">
             <MessageSquare className="w-3 h-3" /> Dibaca
           </span>
         );
       case 'replied':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 inline-flex items-center gap-1">
             <CheckCircle2 className="w-3 h-3" /> Direspon
           </span>
         );
       case 'archived':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-500 border border-slate-700 flex items-center gap-1">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-500 border border-slate-700 inline-flex items-center gap-1">
             <Archive className="w-3 h-3" /> Arsip
           </span>
         );
@@ -137,7 +138,7 @@ export default function InquiriesAdminPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div>
@@ -187,192 +188,282 @@ export default function InquiriesAdminPage() {
         </select>
       </div>
 
-      {/* Main Content Layout: Table & Detail Drawer */}
+      {/* Main Content Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Table List */}
-        <div className={`bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden ${selectedInquiry ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
+        
+        {/* LIST PESAN (Card di Mobile & Table di Desktop) */}
+        <div className={`${selectedInquiry ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center py-20 text-slate-500">
               <Loader2 className="w-8 h-8 animate-spin text-blue-500 mb-2" />
               <span className="text-xs">Memuat pesan masuk...</span>
             </div>
           ) : filteredInquiries.length === 0 ? (
-            <div className="py-16 text-center text-slate-500 space-y-2">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl py-16 text-center text-slate-500 space-y-2">
               <Mail className="w-10 h-10 mx-auto opacity-30" />
               <p className="text-sm font-semibold text-slate-400">Tidak ada pesan ditemukan.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-800 bg-slate-950/50 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                    <th className="py-3.5 px-4">Pengirim</th>
-                    <th className="py-3.5 px-4">Perusahaan / Subjek</th>
-                    <th className="py-3.5 px-4">Ringkasan Pesan</th>
-                    <th className="py-3.5 px-4 text-center">Status</th>
-                    <th className="py-3.5 px-4 text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/60 text-sm">
-                  {filteredInquiries.map((item) => (
-                    <tr 
-                      key={item.id} 
-                      onClick={() => handleOpenDetail(item)}
-                      className={`cursor-pointer transition-colors ${
-                        selectedInquiry?.id === item.id 
-                          ? 'bg-blue-600/10 border-l-2 border-l-blue-500' 
-                          : item.status === 'unread'
-                          ? 'bg-slate-800/40 font-semibold'
-                          : 'hover:bg-slate-800/30'
-                      }`}
-                    >
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-white flex items-center gap-1.5">
+            <>
+              {/* 1. LAYOUT CARD DI MOBILE (< md) */}
+              <div className="grid grid-cols-1 gap-3 md:hidden">
+                {filteredInquiries.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => handleOpenDetail(item)}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-3 ${
+                      selectedInquiry?.id === item.id
+                        ? 'bg-blue-600/10 border-blue-500'
+                        : item.status === 'unread'
+                        ? 'bg-slate-900 border-blue-500/40 shadow-md shadow-blue-500/5'
+                        : 'bg-slate-900/60 border-slate-800'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+                      <div className="space-y-0.5">
+                        <div className="font-bold text-white text-sm flex items-center gap-1.5">
                           {item.status === 'unread' && (
-                            <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+                            <span className="w-2 h-2 rounded-full bg-blue-500 inline-block shrink-0 animate-pulse" />
                           )}
-                          {item.name}
+                          <span>{item.name}</span>
                         </div>
                         <div className="text-xs font-mono text-slate-400">{item.email}</div>
-                      </td>
+                      </div>
+                      <div className="shrink-0">{getStatusBadge(item.status)}</div>
+                    </div>
 
-                      <td className="py-4 px-4">
-                        <div className="text-xs font-medium text-slate-200">{item.company || '-'}</div>
-                        <div className="text-[11px] text-blue-400">{item.serviceRequested || item.subject || 'Konsultasi General'}</div>
-                      </td>
-
-                      <td className="py-4 px-4 text-xs text-slate-300 max-w-xs line-clamp-2">
+                    <div className="space-y-1">
+                      {item.company && (
+                        <div className="text-xs text-slate-300 font-medium flex items-center gap-1">
+                          <Building2 className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                          <span>{item.company}</span>
+                        </div>
+                      )}
+                      <div className="text-xs font-semibold text-blue-400">
+                        {item.serviceRequested || item.subject || 'Konsultasi General'}
+                      </div>
+                      <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed pt-1">
                         {item.message}
-                      </td>
+                      </p>
+                    </div>
 
-                      <td className="py-4 px-4 text-center">
-                        {getStatusBadge(item.status)}
-                      </td>
+                    <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500">
+                      <span>Klik untuk membuka detail</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(item.id!, item.name);
+                        }}
+                        disabled={deletingId === item.id}
+                        className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-red-400 transition-colors"
+                        title="Hapus Pesan"
+                      >
+                        {deletingId === item.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-red-400" />
+                        ) : (
+                          <Trash2 className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-                      <td className="py-4 px-4 text-right" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => handleDelete(item.id!, item.name)}
-                          disabled={deletingId === item.id}
-                          className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-red-400 transition-colors"
-                          title="Hapus Pesan"
+              {/* 2. LAYOUT TABLE DI DESKTOP (>= md) */}
+              <div className="hidden md:block bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-800 bg-slate-950/50 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        <th className="py-3.5 px-4">Pengirim</th>
+                        <th className="py-3.5 px-4">Perusahaan / Subjek</th>
+                        <th className="py-3.5 px-4">Ringkasan Pesan</th>
+                        <th className="py-3.5 px-4 text-center">Status</th>
+                        <th className="py-3.5 px-4 text-right">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60 text-sm">
+                      {filteredInquiries.map((item) => (
+                        <tr 
+                          key={item.id} 
+                          onClick={() => handleOpenDetail(item)}
+                          className={`cursor-pointer transition-colors ${
+                            selectedInquiry?.id === item.id 
+                              ? 'bg-blue-600/10 border-l-2 border-l-blue-500' 
+                              : item.status === 'unread'
+                              ? 'bg-slate-800/40 font-semibold'
+                              : 'hover:bg-slate-800/30'
+                          }`}
                         >
-                          {deletingId === item.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin text-red-400" />
-                          ) : (
-                            <Trash2 className="w-4 h-4" />
-                          )}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                          <td className="py-4 px-4">
+                            <div className="font-bold text-white flex items-center gap-1.5">
+                              {item.status === 'unread' && (
+                                <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+                              )}
+                              {item.name}
+                            </div>
+                            <div className="text-xs font-mono text-slate-400">{item.email}</div>
+                          </td>
+
+                          <td className="py-4 px-4">
+                            <div className="text-xs font-medium text-slate-200">{item.company || '-'}</div>
+                            <div className="text-[11px] text-blue-400">{item.serviceRequested || item.subject || 'Konsultasi General'}</div>
+                          </td>
+
+                          <td className="py-4 px-4 text-xs text-slate-300 max-w-xs line-clamp-2">
+                            {item.message}
+                          </td>
+
+                          <td className="py-4 px-4 text-center">
+                            {getStatusBadge(item.status)}
+                          </td>
+
+                          <td className="py-4 px-4 text-right" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              onClick={() => handleDelete(item.id!, item.name)}
+                              disabled={deletingId === item.id}
+                              className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-red-400 transition-colors"
+                              title="Hapus Pesan"
+                            >
+                              {deletingId === item.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin text-red-400" />
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
           )}
         </div>
 
-        {/* Detail Panel */}
+        {/* DETAIL PANEL PANEL (Sticky di Desktop & Modal Overlay di Mobile) */}
         {selectedInquiry && (
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5 lg:col-span-1 sticky top-6">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-blue-400 flex items-center gap-2">
-                <MessageSquare className="w-4 h-4" /> Detail Pesan Masuk
-              </h2>
-              <button
-                onClick={() => setSelectedInquiry(null)}
-                className="text-slate-500 hover:text-slate-300 p-1 rounded-lg"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Sender Info */}
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center gap-2 text-slate-300">
-                <User className="w-4 h-4 text-blue-400" />
-                <span className="font-bold text-white text-sm">{selectedInquiry.name}</span>
+          <div className="fixed inset-0 z-50 lg:relative lg:inset-auto flex items-center justify-center lg:block p-4 lg:p-0 bg-slate-950/80 lg:bg-transparent backdrop-blur-sm lg:backdrop-blur-none lg:col-span-1">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl lg:rounded-2xl p-6 space-y-5 w-full max-w-lg lg:max-w-none max-h-[90vh] lg:max-h-none overflow-y-auto lg:overflow-visible shadow-2xl lg:shadow-none lg:sticky lg:top-6">
+              
+              {/* Header Panel Detail */}
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h2 className="text-sm font-bold uppercase tracking-wider text-blue-400 flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" /> Detail Pesan Masuk
+                </h2>
+                <button
+                  onClick={() => setSelectedInquiry(null)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <div className="flex items-center gap-2 text-slate-400 font-mono">
-                <Mail className="w-4 h-4 text-blue-400" />
-                <a href={`mailto:${selectedInquiry.email}`} className="hover:underline text-blue-400">
-                  {selectedInquiry.email}
+
+              {/* Sender Info */}
+              <div className="space-y-3 text-xs bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+                <div className="flex items-center gap-2.5 text-slate-300">
+                  <User className="w-4 h-4 text-blue-400 shrink-0" />
+                  <span className="font-bold text-white text-sm">{selectedInquiry.name}</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-slate-400 font-mono">
+                  <Mail className="w-4 h-4 text-blue-400 shrink-0" />
+                  <a href={`mailto:${selectedInquiry.email}`} className="hover:underline text-blue-400 truncate">
+                    {selectedInquiry.email}
+                  </a>
+                </div>
+                {selectedInquiry.phone && (
+                  <div className="flex items-center gap-2.5 text-slate-400 font-mono">
+                    <Phone className="w-4 h-4 text-blue-400 shrink-0" />
+                    <span>{selectedInquiry.phone}</span>
+                  </div>
+                )}
+                {selectedInquiry.company && (
+                  <div className="flex items-center gap-2.5 text-slate-400">
+                    <Building2 className="w-4 h-4 text-blue-400 shrink-0" />
+                    <span>{selectedInquiry.company}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Status Selector */}
+              <div className="space-y-2">
+                <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Ubah Status Penanganan:
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => updateStatus(selectedInquiry.id!, 'read')}
+                    className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                      selectedInquiry.status === 'read'
+                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                    }`}
+                  >
+                    Dibaca
+                  </button>
+                  <button
+                    onClick={() => updateStatus(selectedInquiry.id!, 'replied')}
+                    className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                      selectedInquiry.status === 'replied'
+                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                    }`}
+                  >
+                    Direspon
+                  </button>
+                  <button
+                    onClick={() => updateStatus(selectedInquiry.id!, 'archived')}
+                    className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all col-span-2 ${
+                      selectedInquiry.status === 'archived'
+                        ? 'bg-slate-800 text-slate-300 border-slate-700'
+                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                    }`}
+                  >
+                    Arsipkan
+                  </button>
+                </div>
+              </div>
+
+              {/* Content Box */}
+              <div className="space-y-2 pt-2">
+                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Isi Pesan:
+                </div>
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs leading-relaxed whitespace-pre-wrap max-h-60 overflow-y-auto">
+                  {selectedInquiry.message}
+                </div>
+              </div>
+
+              {/* Quick Action Email & WhatsApp */}
+              <div className="space-y-2 pt-2">
+                <a
+                  href={`mailto:${selectedInquiry.email}?subject=Re: ${encodeURIComponent(selectedInquiry.subject || 'Konsultasi Solusi Senosoft')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>Balas Email Klien</span>
                 </a>
-              </div>
-              {selectedInquiry.phone && (
-                <div className="flex items-center gap-2 text-slate-400 font-mono">
-                  <Phone className="w-4 h-4 text-blue-400" />
-                  <span>{selectedInquiry.phone}</span>
-                </div>
-              )}
-              {selectedInquiry.company && (
-                <div className="flex items-center gap-2 text-slate-400">
-                  <Building2 className="w-4 h-4 text-blue-400" />
-                  <span>{selectedInquiry.company}</span>
-                </div>
-              )}
-            </div>
 
-            {/* Status Selector */}
-            <div className="pt-3 border-t border-slate-800/80">
-              <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                Ubah Status Penanganan:
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => updateStatus(selectedInquiry.id!, 'read')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                    selectedInquiry.status === 'read'
-                      ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
-                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
-                  }`}
-                >
-                  Dibaca
-                </button>
-                <button
-                  onClick={() => updateStatus(selectedInquiry.id!, 'replied')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                    selectedInquiry.status === 'replied'
-                      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
-                  }`}
-                >
-                  Direspon
-                </button>
-                <button
-                  onClick={() => updateStatus(selectedInquiry.id!, 'archived')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all col-span-2 ${
-                    selectedInquiry.status === 'archived'
-                      ? 'bg-slate-800 text-slate-300 border-slate-700'
-                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
-                  }`}
-                >
-                  Arsipkan
-                </button>
+                {selectedInquiry.phone && (
+                  <a
+                    href={`https://wa.me/${selectedInquiry.phone.replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Balas Via WhatsApp</span>
+                  </a>
+                )}
               </div>
-            </div>
 
-            {/* Content Box */}
-            <div className="space-y-2 pt-3 border-t border-slate-800/80">
-              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                Isi Pesan:
-              </div>
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs leading-relaxed whitespace-pre-wrap">
-                {selectedInquiry.message}
-              </div>
             </div>
-
-            {/* Quick Action Email */}
-            <a
-              href={`mailto:${selectedInquiry.email}?subject=Re: ${encodeURIComponent(selectedInquiry.subject || 'Konsultasi Solusi Senosoft')}`}
-              target="_blank"
-              rel="noreferrer"
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2"
-            >
-              <Send className="w-4 h-4" />
-              <span>Balas Email Klien</span>
-            </a>
           </div>
         )}
+
       </div>
     </div>
   );
