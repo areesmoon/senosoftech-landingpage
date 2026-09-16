@@ -26,7 +26,8 @@ import {
   Terminal,
   Radio,
   Building2,
-  ExternalLink
+  ExternalLink,
+  RefreshCw
 } from 'lucide-react';
 
 import { db } from '@/lib/firebase';
@@ -251,8 +252,8 @@ export default function PublicLandingPage() {
             <span>
               {settings?.tagline || (
                 lang === 'id' 
-                  ? 'Solusi Software Enterprise & Infrastruktur IoT' 
-                  : 'Enterprise Software & IoT Infrastructure Solutions'
+                  ? 'Builds the Impossible' 
+                  : 'Builds the Impossible'
               )}
             </span>
           </div>
@@ -287,26 +288,46 @@ export default function PublicLandingPage() {
             </a>
           </div>
 
+          {/* STATS CARDS WITH DYNAMIC ICONS */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12 max-w-4xl mx-auto border-t border-slate-900">
-            <div className="p-4 rounded-2xl bg-slate-900/40 border border-blue-500/20 hover:border-blue-500/40 transition-colors">
+            {/* Card 1: 100% */}
+            <div className="p-4 rounded-2xl bg-slate-900/40 border border-blue-500/20 hover:border-blue-500/40 transition-all flex flex-col items-center justify-center group text-center">
+              <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <Cpu className="w-5 h-5 text-blue-400" />
+              </div>
               <div className="text-2xl font-black text-blue-400 font-mono">100%</div>
               <div className="text-[11px] text-slate-400 font-medium mt-1">
                 {lang === 'id' ? 'Arsitektur Kustom' : 'Custom Architecture'}
               </div>
             </div>
-            <div className="p-4 rounded-2xl bg-slate-900/40 border border-red-500/20 hover:border-red-500/40 transition-colors">
+
+            {/* Card 2: Zero-Downtime */}
+            <div className="p-4 rounded-2xl bg-slate-900/40 border border-red-500/20 hover:border-red-500/40 transition-all flex flex-col items-center justify-center group text-center">
+              <div className="w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <RefreshCw className="w-5 h-5 text-red-400" />
+              </div>
               <div className="text-2xl font-black text-red-400 font-mono">Zero-Downtime</div>
               <div className="text-[11px] text-slate-400 font-medium mt-1">
                 {lang === 'id' ? 'Swap Jaringan & Infra' : 'Network Swap & Infra'}
               </div>
             </div>
-            <div className="p-4 rounded-2xl bg-slate-900/40 border border-blue-500/20 hover:border-blue-500/40 transition-colors">
+
+            {/* Card 3: Real-time */}
+            <div className="p-4 rounded-2xl bg-slate-900/40 border border-cyan-500/20 hover:border-cyan-500/40 transition-all flex flex-col items-center justify-center group text-center">
+              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <Radio className="w-5 h-5 text-cyan-400 animate-pulse" />
+              </div>
               <div className="text-2xl font-black text-cyan-400 font-mono">Real-time</div>
               <div className="text-[11px] text-slate-400 font-medium mt-1">
                 {lang === 'id' ? 'IoT & Lab Interfacing' : 'IoT & Lab Interfacing'}
               </div>
             </div>
-            <div className="p-4 rounded-2xl bg-slate-900/40 border border-red-500/20 hover:border-red-500/40 transition-colors">
+
+            {/* Card 4: Enterprise */}
+            <div className="p-4 rounded-2xl bg-slate-900/40 border border-rose-500/20 hover:border-rose-500/40 transition-all flex flex-col items-center justify-center group text-center">
+              <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <ShieldCheck className="w-5 h-5 text-rose-400" />
+              </div>
               <div className="text-2xl font-black text-rose-400 font-mono">Enterprise</div>
               <div className="text-[11px] text-slate-400 font-medium mt-1">
                 {lang === 'id' ? 'Standar Keamanan' : 'Security Standard'}
